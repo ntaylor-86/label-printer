@@ -3,7 +3,7 @@
 ###################################################
 #  label-printer.py
 #  Author:  N4tH4N
-#  Date:    09/02/2018
+#  Date:    06/02/2018
 #  Brief:   a python program to scrape a jobs txt file, save
 #           all the parts into arrays and then print the
 #           parts on the job to the brother ql-580n label printer
