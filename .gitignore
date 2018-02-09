@@ -97,3 +97,7 @@ ENV/
 
 # mypy
 .mypy_cache/
+
+#Pycharm Files
+.txt
+scratch-pad.py
