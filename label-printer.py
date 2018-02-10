@@ -13,15 +13,54 @@ import re
 from brotherprint import BrotherPrint
 import socket
 import time
+import os.path
+import sys
 
-##################################################################
-############     Opening the .txt file to work on    #############
-##################################################################
 
-txt_file = open('89131.txt', "r")
-contents = txt_file.read()
-txt_file_lines = contents.splitlines()  # have to do this because python adds extra line breaks
-txt_file.close()
+print
+print "  N4tH4N's                          "
+print ".__        ___.          .__              "
+print "|  | _____ \_ |__   ____ |  |             "
+print "|  | \__  \ | __ \_/ __ \|  |             "
+print "|  |__/ __ \| \_\ \  ___/|  |__           "
+print "|____(____  /___  /\___  >____/  "
+print "          \/    \/     \/  "
+print "             .__        __                "
+print "_____________|__| _____/  |_  ___________  "
+print "\____ \_  __ \  |/    \   __\/ __ \_  __ \ "
+print "|  |_> >  | \/  |   |  \  | \  ___/|  | \/  "
+print "|   __/|__|  |__|___|  /__|  \___  >__|     "
+print "|__|                 \/          \/         "
+print "      written in Python 2.7                 "
+print
+print
+
+
+###########################################################################
+############    Defining and opening the .txt file to work on    ##########
+###########################################################################
+
+# prompting the user for the job number
+user_input = raw_input("##  Enter the Job Number: ")
+# combining the 'user_input' string with the extension '.txt'
+input_file = user_input + ".txt"
+
+if os.path.isfile(input_file):
+    txt_file = open(input_file, "r")
+    contents = txt_file.read()
+    txt_file_lines = contents.splitlines()  # have to do this because python adds extra line breaks
+    txt_file.close()
+else:
+    print
+    print "   WhAt??!?!?"
+    print "   That file doesn't seem to exist..."
+    print "   Are you sure you exported the job from iTMS?"
+    print
+    sys.exit(-1)
+
+print
+print
+
 
 ##################################################################
 #######   Finding all the lines that have * - number *    ########
