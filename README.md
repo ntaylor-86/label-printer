@@ -18,7 +18,7 @@ Many thanks to fozzle for this :D
 ```
 python-brotherprint
 
-$ sudo pip install python-brotherprint
+$ sudo pip install brotherprint
 ```
 
 ### Installing

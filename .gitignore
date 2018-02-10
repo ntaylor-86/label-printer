@@ -101,3 +101,4 @@ ENV/
 #Pycharm Files
 .txt
 scratch-pad.py
+.idea/
