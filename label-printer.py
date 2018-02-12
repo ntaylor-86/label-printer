@@ -95,6 +95,18 @@ print "Job Number =", job_number
 print "The number of parts in the job =", array_length
 print
 
+###########################################################
+############  Defining the customer variable  #############
+###########################################################
+
+if customer == "G H VARLEY - BNE":
+    print "I have detected that the customer is VARLEY"
+    customer = "VARLEY"
+elif customer == "TRITIUM PTY LTD":
+    print "I have detected that the customer is TRITIUM"
+    customer = "TRITIUM"
+
+
 ##################################################################
 ############  Creating the Client Part Number Array  #############
 ##################################################################
@@ -104,16 +116,29 @@ client_part_number_array = []
 for i in ticket_line_number_array:
     lines_ahead_array = []
     for counter, line in enumerate(txt_file_lines, 1):
-        if counter < ( i + 12 ) and counter > ( i + 3 ):
+        if counter < ( i + 12 ) and counter > ( i + 2 ):
             lines_ahead_array.append(line)
 
-    for j, item in enumerate(lines_ahead_array):
-        if j < 3 and item.find("Issue Date") >= 0:
-            # going back by one line and splitting the string by {TAB}
-            client_part_number_array.append(lines_ahead_array[j-1].split("\t")[1])
-        elif j > 4 and item.find("Issue Date") >= 0:
-            # going back by two lines
-            client_part_number_array.append(lines_ahead_array[j-2])
+    if customer == "VARLEY":
+        for j, item in enumerate(lines_ahead_array):
+            if j < 3 and item.find("Issue Date") >= 0:
+                # going back by one line and splitting the string by {TAB}
+                client_part_number_array.append(lines_ahead_array[j-1].split("\t")[1])
+            elif j > 4 and item.find("Issue Date") >= 0:
+                # going back by two lines
+                client_part_number_array.append(lines_ahead_array[j-2])
+
+    if customer == "TRITIUM":
+        for j , item in enumerate(lines_ahead_array):
+            # tritium has their client part number in the part description field
+            # looking for "Part Description" then jumping one line ahead
+            if item.find("Part Description") >= 0:
+                # adding "CUSTOMER LABELS" if the next line contains "CUSTOMER"
+                if lines_ahead_array[j+1].split(" ")[0] == "CUSTOMER":
+                    client_part_number_array.append("CUSTOMER-LABELS")
+                else:
+                    # one line down from "Part Description" and splitting the string with the first white space
+                    client_part_number_array.append(lines_ahead_array[j+1].split(" ")[0])
 
 
 # for counter, item in enumerate(client_part_number_array, 1):
