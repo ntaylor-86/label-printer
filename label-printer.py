@@ -169,9 +169,20 @@ for i in ticket_line_number_array:
 
 
 
-###########################################################
-############   Starting to print the labels   #############
-###########################################################
+###############################################################
+##############   Starting to print the labels   ###############
+###############################################################
+
+########################################
+####  Defining the template number  ####
+# VARLEY has a key value of 1
+# TRITIUM has a key value of 2
+# you can check the printers web page to see the templates that are loaded onto it
+if customer == "VARLEY":
+    template_number = "1"
+elif customer == "TRITIUM":
+    template_number = "2"
+########################################
 
 f_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 # The IP Address of the printer is 192.168.5.64 and the default port number for it is 9100
@@ -182,15 +193,14 @@ printjob.template_mode()
 printjob.template_init()
 # This command to stop the printer from cutting every label after it prints it
 printjob.send('^CO0990')
-# The Varley template is template number: 1
-printjob.choose_template(1)
+# Check the printers web page to see the template numbers
+printjob.choose_template(template_number)
 
 for i, item in enumerate(ticket_line_number_array):
     if i < ticket_line_number_array:
         ticket_number = str(i + 1)
         ticket_number = job_number + "-" + ticket_number
-    printjob.template_init()
-    printjob.send('^CO0990')
+
     printjob.select_and_insert("part no.", client_part_number_array[i])
     print "Client Part Number:", client_part_number_array[i]
     printjob.select_and_insert("qty", qty_array[i])
