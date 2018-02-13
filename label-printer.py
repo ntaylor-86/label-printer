@@ -31,7 +31,6 @@ print "\____ \_  __ \  |/    \   __\/ __ \_  __ \ "
 print "|  |_> >  | \/  |   |  \  | \  ___/|  | \/  "
 print "|   __/|__|  |__|___|  /__|  \___  >__|     "
 print "|__|                 \/          \/         "
-print "      written in Python 2.7                 "
 print
 print
 
