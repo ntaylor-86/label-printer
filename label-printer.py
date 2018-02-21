@@ -190,8 +190,9 @@ printjob = BrotherPrint(f_socket)
 
 printjob.template_mode()
 printjob.template_init()
-# This command to stop the printer from cutting every label after it prints it
-printjob.send('^CO0990')
+# This command is sent to the printer to tell it to cut after every 6 labels
+printjob.send('^CO1060')
+# printjob.send('^CO0990') ## This was used to stop it auto cutting after every label, we now cut after every 6
 # Check the printers web page to see the template numbers
 printjob.choose_template(template_number)
 
