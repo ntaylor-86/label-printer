@@ -98,8 +98,12 @@ print
 ############  Defining the customer variable  #############
 ###########################################################
 
+# VARLEY BNE and VARLEY TOMAGO (SCHOOL DRIVE) use the same printer template
 if customer == "G H VARLEY - BNE":
     print "I have detected that the customer is VARLEY"
+    customer = "VARLEY"
+elif customer == "G H VARLEY - TOMAGO (SCHOOL DRIVE)":
+    print "I have detected that the customer is VARLEY - TOMAGO (SCHOOL DRIVE)"
     customer = "VARLEY"
 elif customer == "TRITIUM PTY LTD":
     print "I have detected that the customer is TRITIUM"
@@ -174,7 +178,7 @@ for i in ticket_line_number_array:
 
 ########################################
 ####  Defining the template number  ####
-# VARLEY has a key value of 1
+# VARLEY has a key value of 1  ( VARLEY BNE and VARLEY TOMAGO - SCHOOL DRIVE, use the same template number (1) )
 # TRITIUM has a key value of 2
 # you can check the printers web page to see the templates that are loaded onto it
 if customer == "VARLEY":
@@ -201,11 +205,16 @@ for i, item in enumerate(ticket_line_number_array):
         ticket_number = str(i + 1)
         ticket_number = job_number + "-" + ticket_number
 
-    printjob.select_and_insert("part no.", client_part_number_array[i])
-    print "Client Part Number:", client_part_number_array[i]
-    printjob.select_and_insert("qty", qty_array[i])
-    print "Qty:", qty_array[i]
-    printjob.select_and_insert("ticket no.", ticket_number)
     print "Ticket Number:", ticket_number
+    printjob.select_and_insert("ticket no.", ticket_number)
+
+    print "Client Part Number:", client_part_number_array[i]
+    printjob.select_and_insert("part no.", client_part_number_array[i])
+
+    print "Qty:", qty_array[i]
+    printjob.select_and_insert("qty", qty_array[i])
+
+    # command to print the template
     printjob.template_print()
+    # the program will sleep for 1 second before starting the next command
     time.sleep(1)
