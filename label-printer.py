@@ -10,7 +10,7 @@
 ###################################################
 
 import re
-from brotherprint import BrotherPrint
+# from brotherprint import BrotherPrint
 import socket
 import time
 import os.path
@@ -92,21 +92,20 @@ array_length = len(ticket_line_number_array)
 print "Customer =", customer
 print "Job Number =", job_number
 print "The number of parts in the job =", array_length
-print
 
 ###########################################################
 ############  Defining the customer variable  #############
 ###########################################################
 
-# VARLEY BNE and VARLEY TOMAGO (SCHOOL DRIVE) use the same printer template
+# VARLEY BNE and VARLEY TOMAGO (SCHOOL DRIVE) use the same label template
 if customer == "G H VARLEY - BNE":
-    print "I have detected that the customer is VARLEY"
     customer = "VARLEY"
 elif customer == "G H VARLEY - TOMAGO (SCHOOL DRIVE)":
-    print "I have detected that the customer is VARLEY - TOMAGO (SCHOOL DRIVE)"
     customer = "VARLEY"
+# VARLEY TOMAGO DEFENCE use a different label template
+elif customer == "G H VARLEY - TOMAGO (McINTYRE ROAD - DEFENCE)":
+    customer = "VARLEY_TOMAGO_DEFENCE"
 elif customer == "TRITIUM PTY LTD":
-    print "I have detected that the customer is TRITIUM"
     customer = "TRITIUM"
 
 
@@ -171,6 +170,34 @@ for i in ticket_line_number_array:
 #     print "Ticket No.", ticket_number, "Part No:", client_part_number_array[i], "Qty:", qty_array[i]
 
 
+############################################################
+#####  Arrays and Variables for VARLEY TOMAGO DEFENCE  #####
+############################################################
+
+if customer == "VARLEY_TOMAGO_DEFENCE":
+
+    # starting to find the Order Number
+    for i in enumerate(ticket_line_number_array):
+        # only searching the first element in the ticket_line_number_array
+        if i < 1:
+            lines_ahead_array = []
+            for counter, line in enumerate(txt_file_lines, 1):
+                # only reading in lines 5 to 14 from the txt file into the array
+                if counter > 4 and counter < 15:
+                    lines_ahead_array.append(line)
+
+    # searching each line for the word "Order No"
+    for j, item in enumerate(lines_ahead_array):
+        if item.find("Order No") >= 0:
+            # the Order Number is one line below, and the third tab over
+            order_no = lines_ahead_array[j+1].split("\t")[2]
+
+    print "Order Number =", order_no
+    print
+    print
+
+    kit_number = raw_input("##  Please enter the Kit Number for this job: ")
+
 
 ###############################################################
 ##############   Starting to print the labels   ###############
@@ -185,36 +212,38 @@ if customer == "VARLEY":
     template_number = "1"
 elif customer == "TRITIUM":
     template_number = "2"
+elif customer == "VARLEY_TOMAGO_DEFENCE":
+    template_number = "3"
 ########################################
 
-f_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-# The IP Address of the printer is 192.168.5.64 and the default port number for it is 9100
-f_socket.connect(('192.168.5.64', 9100))
-printjob = BrotherPrint(f_socket)
-
-printjob.template_mode()
-printjob.template_init()
-# This command is sent to the printer to tell it to cut after every 6 labels
-printjob.send('^CO1060')
-# printjob.send('^CO0990') ## This was used to stop it auto cutting after every label, we now cut after every 6
-# Check the printers web page to see the template numbers
-printjob.choose_template(template_number)
-
-for i, item in enumerate(ticket_line_number_array):
-    if i < ticket_line_number_array:
-        ticket_number = str(i + 1)
-        ticket_number = job_number + "-" + ticket_number
-
-    print "Ticket Number:", ticket_number
-    printjob.select_and_insert("ticket no.", ticket_number)
-
-    print "Client Part Number:", client_part_number_array[i]
-    printjob.select_and_insert("part no.", client_part_number_array[i])
-
-    print "Qty:", qty_array[i]
-    printjob.select_and_insert("qty", qty_array[i])
-
-    # command to print the template
-    printjob.template_print()
-    # the program will sleep for 1 second before starting the next command
-    time.sleep(1)
+# f_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+# # The IP Address of the printer is 192.168.5.64 and the default port number for it is 9100
+# f_socket.connect(('192.168.5.64', 9100))
+# printjob = BrotherPrint(f_socket)
+#
+# printjob.template_mode()
+# printjob.template_init()
+# # This command is sent to the printer to tell it to cut after every 6 labels
+# printjob.send('^CO1060')
+# # printjob.send('^CO0990') ## This was used to stop it auto cutting after every label, we now cut after every 6
+# # Check the printers web page to see the template numbers
+# printjob.choose_template(template_number)
+#
+# for i, item in enumerate(ticket_line_number_array):
+#     if i < ticket_line_number_array:
+#         ticket_number = str(i + 1)
+#         ticket_number = job_number + "-" + ticket_number
+#
+#     print "Ticket Number:", ticket_number
+#     printjob.select_and_insert("ticket no.", ticket_number)
+#
+#     print "Client Part Number:", client_part_number_array[i]
+#     printjob.select_and_insert("part no.", client_part_number_array[i])
+#
+#     print "Qty:", qty_array[i]
+#     printjob.select_and_insert("qty", qty_array[i])
+#
+#     # command to print the template
+#     printjob.template_print()
+#     # the program will sleep for 1 second before starting the next command
+#     time.sleep(1)
