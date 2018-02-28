@@ -10,7 +10,7 @@
 ###################################################
 
 import re
-# from brotherprint import BrotherPrint
+from brotherprint import BrotherPrint
 import socket
 import time
 import os.path
@@ -32,7 +32,20 @@ print "|  |_> >  | \/  |   |  \  | \  ___/|  | \/  "
 print "|   __/|__|  |__|___|  /__|  \___  >__|     "
 print "|__|                 \/          \/         "
 print
+print " |-------------------------------|"
+print " |   1) Print Labels             |"
+print " |   2) Test Mode                |"
+print " |-------------------------------|"
 print
+mode = raw_input("# Please enter an option number: ")
+
+print_labels = False
+test_mode = False
+
+if mode == "1":
+    print_labels = True
+elif mode == "2":
+    test_mode = True
 
 
 ###########################################################################
@@ -130,7 +143,10 @@ for i in ticket_line_number_array:
                 # going back by two lines
                 client_part_number_array.append(lines_ahead_array[j-2])
 
-    if customer == "TRITIUM":
+    # TRITIUM and VARLEY TOMAGO DEFENCE get the client part number from the line below 'Part Description'
+    # once it finds 'Part Description', it will look one line ahead, then split the line at the first space " "
+    # and keep the first string that is there
+    if customer == "TRITIUM" or customer == "VARLEY_TOMAGO_DEFENCE":
         for j , item in enumerate(lines_ahead_array):
             # tritium has their client part number in the part description field
             # looking for "Part Description" then jumping one line ahead
@@ -170,9 +186,9 @@ for i in ticket_line_number_array:
 #     print "Ticket No.", ticket_number, "Part No:", client_part_number_array[i], "Qty:", qty_array[i]
 
 
-############################################################
-#####  Arrays and Variables for VARLEY TOMAGO DEFENCE  #####
-############################################################
+#################################################################
+#####  Arrays and Variables for VARLEY TOMAGO DEFENCE only  #####
+#################################################################
 
 if customer == "VARLEY_TOMAGO_DEFENCE":
 
@@ -196,54 +212,147 @@ if customer == "VARLEY_TOMAGO_DEFENCE":
     print
     print
 
+    # Getting the Kit Number from the USER, this changes with each order
+    print "*  VARLEY - TOMAGO DEFENCE, require a kit number to be printed on each label."
+    print "*  The kit number should be written on the 'CUSTOMER-LABELS' ticket."
+    print "*  If there is no kit number on that ticket, see Jamie."
+    print
     kit_number = raw_input("##  Please enter the Kit Number for this job: ")
+
+    # Creating the Revision Array
+
+    revision_array = []
+
+    for i in ticket_line_number_array:
+        lines_ahead_array = []
+        for counter, line in enumerate(txt_file_lines, 1):
+            if counter < ( i +  14 ) and counter > ( i + 3 ):
+                lines_ahead_array.append(line)
+
+        for j, item in enumerate(lines_ahead_array):
+            if item.find("Revision") >= 0:
+                # added the 'try' because you will get an IndexError if there is no revision in iTMS
+                try:
+                    # the revision will be one line down and the 5th tab over
+                    revision_array.append(lines_ahead_array[j+1].split("\t")[4])
+                except IndexError:
+                    # adding an empty string to the array if there is no revision
+                    revision_array.append(" ")
 
 
 ###############################################################
 ##############   Starting to print the labels   ###############
 ###############################################################
 
-########################################
-####  Defining the template number  ####
-# VARLEY has a key value of 1  ( VARLEY BNE and VARLEY TOMAGO - SCHOOL DRIVE, use the same template number (1) )
-# TRITIUM has a key value of 2
-# you can check the printers web page to see the templates that are loaded onto it
-if customer == "VARLEY":
-    template_number = "1"
-elif customer == "TRITIUM":
-    template_number = "2"
-elif customer == "VARLEY_TOMAGO_DEFENCE":
-    template_number = "3"
-########################################
+if print_labels == True:
 
-# f_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-# # The IP Address of the printer is 192.168.5.64 and the default port number for it is 9100
-# f_socket.connect(('192.168.5.64', 9100))
-# printjob = BrotherPrint(f_socket)
-#
-# printjob.template_mode()
-# printjob.template_init()
-# # This command is sent to the printer to tell it to cut after every 6 labels
-# printjob.send('^CO1060')
-# # printjob.send('^CO0990') ## This was used to stop it auto cutting after every label, we now cut after every 6
-# # Check the printers web page to see the template numbers
-# printjob.choose_template(template_number)
-#
-# for i, item in enumerate(ticket_line_number_array):
-#     if i < ticket_line_number_array:
-#         ticket_number = str(i + 1)
-#         ticket_number = job_number + "-" + ticket_number
-#
-#     print "Ticket Number:", ticket_number
-#     printjob.select_and_insert("ticket no.", ticket_number)
-#
-#     print "Client Part Number:", client_part_number_array[i]
-#     printjob.select_and_insert("part no.", client_part_number_array[i])
-#
-#     print "Qty:", qty_array[i]
-#     printjob.select_and_insert("qty", qty_array[i])
-#
-#     # command to print the template
-#     printjob.template_print()
-#     # the program will sleep for 1 second before starting the next command
-#     time.sleep(1)
+    ########################################
+    ####  Defining the template number  ####
+    # VARLEY has a key value of 1  ( VARLEY BNE and VARLEY TOMAGO - SCHOOL DRIVE, use the same template number (1) )
+    # TRITIUM has a key value of 2
+    # you can check the printers web page to see the templates that are loaded onto it
+    if customer == "VARLEY":
+        template_number = "1"
+    elif customer == "TRITIUM":
+        template_number = "2"
+    elif customer == "VARLEY_TOMAGO_DEFENCE":
+        template_number = "3"
+    ########################################
+
+    f_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    # The IP Address of the printer is 192.168.5.64 and the default port number for it is 9100
+    f_socket.connect(('192.168.5.64', 9100))
+    printjob = BrotherPrint(f_socket)
+
+    printjob.template_mode()
+    printjob.template_init()
+    # Check the printers web page to see the template numbers
+    printjob.choose_template(template_number)
+
+    if customer == "VARLEY_TOMAGO_DEFENCE":
+
+        # This command is sent to the printer to tell it to cut after every 5 labels
+        # 5 labels fits an A4 nicely for TOMAGO DEFENCE labels
+        printjob.send('^CO1050')
+
+        for i, item in enumerate(ticket_line_number_array):
+
+            ticket_number = job_number + "-" + str( i + 1 )
+
+            print
+            print
+            print "Ticket Number:", ticket_number
+            print "Client Part Number:", client_part_number_array[i]
+            print "Revision:", revision_array[i]
+            print "Order Number:", order_no
+            print "Kit Number:", kit_number
+
+            print
+            print "Number of labels to be printed for this part:", qty_array[i]
+            print
+
+            counter = 0
+            while counter < int(qty_array[i]):
+
+                print "Printing label number", (counter +1)
+
+                # print "Ticket Number:", ticket_number
+                printjob.select_and_insert("ticket no.", ticket_number)
+                # print "Client Part Number:", client_part_number_array[i]
+                printjob.select_and_insert("part no.", client_part_number_array[i])
+                # print "Revision:", revision_array[i]
+                printjob.select_and_insert("revision no.", revision_array[i])
+                # print "Order Number:", order_no
+                printjob.select_and_insert("order no.", order_no)
+                # print "Kit Number:", kit_number
+                printjob.select_and_insert("kit no.", kit_number)
+
+                printjob.template_print()
+                time.sleep(1)
+                counter += 1
+
+
+    else:
+        # This command is sent to the printer to tell it to cut after every 6 labels
+        # 6 labels fits an A4 nicely for VARLEY BNE and TRITIUM labels
+        printjob.send('^CO1060')
+        for i, item in enumerate(ticket_line_number_array):
+            if i < ticket_line_number_array:
+                ticket_number = str(i + 1)
+                ticket_number = job_number + "-" + ticket_number
+
+            print "Ticket Number:", ticket_number
+            printjob.select_and_insert("ticket no.", ticket_number)
+
+            print "Client Part Number:", client_part_number_array[i]
+            printjob.select_and_insert("part no.", client_part_number_array[i])
+
+            print "Qty:", qty_array[i]
+            printjob.select_and_insert("qty", qty_array[i])
+
+            # command to print the template
+            printjob.template_print()
+            # the program will sleep for 1 second before starting the next command
+            time.sleep(1)
+
+
+#################################
+##########  Test Mode  ##########
+#################################
+
+if test_mode == True:
+
+    print
+    print "****  Test Mode  ****"
+    print "Looping through and testing all of the arrays."
+    print
+
+    for i, item in enumerate(ticket_line_number_array):
+        print "Ticket Number:", job_number+"-"+str(i+1)
+        print "Part Number: ", client_part_number_array[i]
+        if customer == "VARLEY_TOMAGO_DEFENCE":
+            print "Revision:", revision_array[i]
+        print "Quantity:", qty_array[i]
+        print
+
+
