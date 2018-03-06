@@ -32,20 +32,20 @@ print "|  |_> >  | \/  |   |  \  | \  ___/|  | \/  "
 print "|   __/|__|  |__|___|  /__|  \___  >__|     "
 print "|__|                 \/          \/         "
 print
-print " |-------------------------------|"
-print " |   1) Print Labels             |"
-print " |   2) Test Mode                |"
-print " |-------------------------------|"
-print
-mode = raw_input("# Please enter an option number: ")
+# print " |-------------------------------|"
+# print " |   1) Print Labels             |"
+# print " |   2) Test Mode                |"
+# print " |-------------------------------|"
+# print
+# mode = raw_input("# Please enter an option number: ")
 
-print_labels = False
+print_labels = True
 test_mode = False
 
-if mode == "1":
-    print_labels = True
-elif mode == "2":
-    test_mode = True
+# if mode == "1":
+#     print_labels = True
+# elif mode == "2":
+#     test_mode = True
 
 
 ###########################################################################
@@ -354,5 +354,3 @@ if test_mode == True:
             print "Revision:", revision_array[i]
         print "Quantity:", qty_array[i]
         print
-
-
