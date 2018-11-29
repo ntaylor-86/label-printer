@@ -32,20 +32,21 @@ print "|  |_> >  | \/  |   |  \  | \  ___/|  | \/  "
 print "|   __/|__|  |__|___|  /__|  \___  >__|     "
 print "|__|                 \/          \/         "
 print
-# print " |-------------------------------|"
-# print " |   1) Print Labels             |"
-# print " |   2) Test Mode                |"
-# print " |-------------------------------|"
-# print
-# mode = raw_input("# Please enter an option number: ")
+print " |-------------------------------|"
+print " |   1) Print Labels             |"
+print " |   2) Test Mode                |"
+print " |-------------------------------|"
+print
+mode = raw_input("# Please enter an option number: ")
+mode = mode.split()[0]
 
-print_labels = True
+print_labels = False
 test_mode = False
 
-# if mode == "1":
-#     print_labels = True
-# elif mode == "2":
-#     test_mode = True
+if mode == "1":
+    print_labels = True
+elif mode == "2":
+    test_mode = True
 
 
 ###########################################################################
@@ -54,8 +55,9 @@ test_mode = False
 
 # prompting the user for the job number
 user_input = raw_input("##  Enter the Job Number: ")
+user_input = user_input.split()[0]
 # combining the 'user_input' string with the extension '.txt'
-input_file = user_input + ".txt"
+input_file = str(user_input) + ".txt"
 
 if os.path.isfile(input_file):
     txt_file = open(input_file, "r")
@@ -117,6 +119,8 @@ elif customer == "G H VARLEY - TOMAGO (SCHOOL DRIVE)":
     customer = "VARLEY"
 # VARLEY TOMAGO DEFENCE use a different label template
 elif customer == "G H VARLEY - TOMAGO (McINTYRE ROAD - DEFENCE)":
+    customer = "VARLEY_TOMAGO_DEFENCE"
+elif customer == "G H VARLEY - TOMAGO DEFENCE":
     customer = "VARLEY_TOMAGO_DEFENCE"
 elif customer == "TRITIUM PTY LTD":
     customer = "TRITIUM"
@@ -218,6 +222,7 @@ if customer == "VARLEY_TOMAGO_DEFENCE":
     print "*  If there is no kit number on that ticket, see Jamie."
     print
     kit_number = raw_input("##  Please enter the Kit Number for this job: ")
+    kit_number = kit_number.split()[0]
 
     # Creating the Revision Array
 
@@ -261,6 +266,7 @@ if print_labels == True:
 
     f_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     # The IP Address of the printer is 192.168.5.64 and the default port number for it is 9100
+    # printer website == 192.168.5.64 (user: admin | pass: access)
     f_socket.connect(('192.168.5.64', 9100))
     printjob = BrotherPrint(f_socket)
 
@@ -273,7 +279,7 @@ if print_labels == True:
 
         # This command is sent to the printer to tell it to cut after every 5 labels
         # 5 labels fits an A4 nicely for TOMAGO DEFENCE labels
-        printjob.send('^CO1050')
+        # printjob.send('^CO1050')
 
         for i, item in enumerate(ticket_line_number_array):
 
@@ -291,8 +297,10 @@ if print_labels == True:
             print "Number of labels to be printed for this part:", qty_array[i]
             print
 
+            qty_to_print = ( int(qty_array[i]) + 1 )
+
             counter = 0
-            while counter < int(qty_array[i]):
+            while counter < qty_to_print:
 
                 print "Printing label number", (counter +1)
 
@@ -308,8 +316,10 @@ if print_labels == True:
                 printjob.select_and_insert("kit no.", kit_number)
 
                 printjob.template_print()
-                time.sleep(1)
+                time.sleep(4)
                 counter += 1
+            
+            raw_input('Press enter to continue...')
 
 
     else:
